@@ -1,0 +1,8 @@
+MediaElch.MediaElch.layer: onTop
+MediaElch.MediaElch.startMaximized: 1
+MediaElch.MediaElch.fClose: 0
+MediaElch.MediaElch.fHide: 0
+MediaElch.MediaElch.fMinimize: 0
+MediaElch.MediaElch.fMove: 0
+MediaElch.MediaElch.fRollup: 0
+MediaElch.MediaElch.appTakesFocus: 1
