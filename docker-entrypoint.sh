@@ -8,12 +8,6 @@ if [ ! -f /data/.Xresources ]; then
   chown app:app /data/.Xresources
 fi
 
-if [ ! -f /data/.vnc/Xtigervnc-session ]; then
-  mkdir -p /data/.vnc
-  cp /usr/local/share/xstartup /data/.vnc/Xtigervnc-session
-  chown -R app:app /data/.vnc
-fi
-
 if [ ! -f /data/.local/share/kvibes/MediaElch/advancedsettings.xml ]; then
   mkdir -p /data/.local/share/kvibes/MediaElch
   cp /usr/local/share/MediaElch/advancedsettings.xml /data/.local/share/kvibes/MediaElch/advancedsettings.xml
