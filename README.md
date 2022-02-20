@@ -2,7 +2,7 @@
 
 Container for MediaElch (http://www.kvibes.de/mediaelch/)
 
-Run MediaElch with HTTP GUI (port 8000) or VNC (port 5900).
+Run MediaElch with the GUI available over HTTP or VNC.
 
 https://hub.docker.com/r/fhriley/mediaelch
 
