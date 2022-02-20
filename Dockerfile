@@ -16,6 +16,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     && apt-get -y --no-install-recommends install \
         build-essential \
+        curl \
         git \
         libcurl4-gnutls-dev \
         libmediainfo-dev \
@@ -36,6 +37,7 @@ RUN apt-get update \
         cmake \
         ca-certificates \
         libpam0g-dev \
+        ninja-build \
         xfonts-base \
         yasm \
     && update-ca-certificates \
@@ -66,12 +68,10 @@ RUN cd /tmp \
     && git clone --depth=1 --branch ${MEDIAELCH_BRANCH} https://github.com/Komet/MediaElch.git \
     && cd MediaElch \
     && git submodule update --init \
-    && mkdir build \
-    && cd build \
-    && qmake .. \
-    && make -j $(nproc) \
-    && make install
-
+    && cmake -S . --preset=release \
+    && cmake --build build/release -j $(nproc) \
+    && cmake --install build/release \
+    && cmake --install build/release/third_party/quazip
 
 FROM $BASE_IMAGE
 
@@ -103,20 +103,24 @@ RUN apt-get update \
        	\
        	ca-certificates \
        	curl \
+       	ffmpeg \
        	gosu \
        	icewm \
-       	libgnutls-openssl27 \
-       	libgnutlsxx28 \
-       	libssl1.1 \
         supervisor \
         tigervnc-standalone-server \
         xfonts-base \
         x11-xserver-utils \
     && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
 
+ARG MEDIAELCH_BRANCH=v2.8.14
+
 # assets.fanart.tv uses a ZeroSSL cert
 RUN curl -sfL -o /usr/local/share/ca-certificates/ZeroSSL.crt "https://crt.sh/?d=2427368505" \
-    && update-ca-certificates
+    && update-ca-certificates \
+    && mkdir -p /usr/local/share/MediaElch \
+    && curl -sfL -o /usr/local/share/MediaElch/advancedsettings.xml \
+       https://raw.githubusercontent.com/Komet/MediaElch/${MEDIAELCH_BRANCH}/docs/advancedsettings.xml
+
 
 COPY supervisord.conf /etc/
 COPY docker-entrypoint.sh /
@@ -125,10 +129,11 @@ COPY icewm /etc/X11/icewm
 
 COPY --from=easy-novnc-build /bin/easy-novnc /usr/local/bin/
 COPY --from=build /opt/TurboVNC /opt/TurboVNC
-COPY --from=build /usr/bin/MediaElch /usr/bin/MediaElch
-COPY --from=build /usr/share/applications/MediaElch.desktop /usr/share/applications/MediaElch.desktop
-COPY --from=build /usr/share/pixmaps/MediaElch.png /usr/share/pixmaps/MediaElch.png
-COPY --from=build /usr/share/metainfo/com.kvibes.MediaElch.metainfo.xml /usr/share/metainfo/com.kvibes.MediaElch.metainfo.xml
+COPY --from=build /usr/local/bin/MediaElch /usr/local/bin/MediaElch
+COPY --from=build /usr/local/share/applications/MediaElch.desktop /usr/local/share/applications/MediaElch.desktop
+COPY --from=build /usr/local/share/pixmaps/MediaElch.png /usr/local/share/pixmaps/MediaElch.png
+COPY --from=build /usr/local/share/metainfo/com.kvibes.MediaElch.metainfo.xml /usr/local/share/metainfo/com.kvibes.MediaElch.metainfo.xml
+COPY --from=build /usr/local/lib/libquazip1-qt5.so* /usr/local/lib/
 
 CMD ["/docker-entrypoint.sh"]
 

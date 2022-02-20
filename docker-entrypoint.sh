@@ -14,5 +14,14 @@ if [ ! -f /data/.vnc/Xtigervnc-session ]; then
   chown -R app:app /data/.vnc
 fi
 
+if [ ! -f /data/.local/share/kvibes/MediaElch/advancedsettings.xml ]; then
+  mkdir -p /data/.local/share/kvibes/MediaElch
+  cp /usr/local/share/MediaElch/advancedsettings.xml /data/.local/share/kvibes/MediaElch/advancedsettings.xml
+  chown -R app:app /data/.local
+fi
+
+export QT_LOGGING_RULES="generic.debug=false
+movie.debug=false"
+
 chown app:app /dev/stdout
 exec gosu app supervisord
