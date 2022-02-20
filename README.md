@@ -4,9 +4,9 @@ Container for MediaElch (http://www.kvibes.de/mediaelch/)
 
 Run MediaElch with HTTP GUI (port 8000) or VNC (port 5900).
 
-https://hub.docker.com/r/fhriley/mediaeelch
+https://hub.docker.com/r/fhriley/mediaelch
 
-https://github.com/fhriley/mediaeelch-docker
+https://github.com/fhriley/mediaelch-docker
 
 **This image will run natively on Raspberry Pi and MacOS**
 
