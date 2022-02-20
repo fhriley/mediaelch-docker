@@ -79,7 +79,10 @@ RUN apt-get update \
        	gosu \
        	icewm \
         supervisor \
+        xauth \
         xfonts-base \
+        xkb-data \
+        x11-xkb-utils \
         x11-xserver-utils \
     && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
 
