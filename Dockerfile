@@ -39,7 +39,7 @@ RUN cd /tmp \
     && git clone --depth=1 --branch ${MEDIAELCH_BRANCH} https://github.com/Komet/MediaElch.git \
     && cd MediaElch \
     && git submodule update --init \
-    && cmake -S . --preset=release \
+    && cmake -S . --preset=release -DDISABLE_UPDATER=ON \
     && cmake --build build/release -j $(nproc) \
     && cmake --install build/release \
     && cmake --install build/release/third_party/quazip
