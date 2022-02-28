@@ -3,10 +3,9 @@ import argparse
 import subprocess
 import shlex
 
-BASE_IMAGE = 'ubuntu:22.04'
-EASY_NOVNC_IMAGE = 'fhriley/easy-novnc:1.3.0'
-TURBOVNC_IMAGE = 'fhriley/turbovnc:2.2.7'
 IMAGE_NAME = 'fhriley/mediaelch'
+BASE_IMAGE = 'fhriley/vnc-base:latest'
+UBUNTU_IMAGE = 'ubuntu:22.04'
 PLATFORMS = ['linux/amd64', 'linux/arm64', 'linux/arm/v7']
 CACHE = f'type=registry,ref={IMAGE_NAME}:'
 BUILDX = 'docker buildx build {build_args} --platform {platforms} {tags} --cache-from {cache} --cache-to type=inline,mode=max {push} {load} {no_cache} .'
@@ -33,9 +32,8 @@ if __name__ == '__main__':
 
     build_args = [
         f'BASE_IMAGE={args.base}',
+        f'UBUNTU_IMAGE={UBUNTU_IMAGE}',
         f'MEDIAELCH_BRANCH={args.branch}',
-        f'EASY_NOVNC_IMAGE={EASY_NOVNC_IMAGE}',
-        f'TURBOVNC_IMAGE={TURBOVNC_IMAGE}',
     ]
 
     buildx = BUILDX.format(
@@ -45,7 +43,7 @@ if __name__ == '__main__':
         cache=CACHE + (args.cache or args.tag[0]),
         push='--push' if args.push else '',
         load='--load' if args.load else '--pull',
-        no_cache='--no-cache' if args.no_cache else '',
+        no_cache='--no-cache' if args.no_cache else ''
     )
 
     print(buildx)

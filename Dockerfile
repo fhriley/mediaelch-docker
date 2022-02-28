@@ -1,10 +1,8 @@
-ARG BASE_IMAGE="ubuntu:22.04"
-ARG EASY_NOVNC_IMAGE="fhriley/easy-novnc:1.3.0"
-ARG TURBOVNC_IMAGE="fhriley/turbovnc:2.2.7"
+ARG BASE_IMAGE="fhriley/vnc-base:latest"
+ARG UBUNTU_IMAGE="ubuntu:22.04"
 
-FROM $EASY_NOVNC_IMAGE as easy-novnc
-FROM $TURBOVNC_IMAGE as turbovnc
-FROM $BASE_IMAGE as build
+# -----------------------------------
+FROM $UBUNTU_IMAGE as build
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
@@ -44,7 +42,7 @@ RUN cd /tmp \
     && cmake --install build/release \
     && cmake --install build/release/third_party/quazip
 
-
+# -----------------------------------
 FROM $BASE_IMAGE
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -73,17 +71,9 @@ RUN apt-get update \
         libqt5quickwidgets5 \
         libqt5quick5 \
        	\
-       	ca-certificates \
        	curl \
        	ffmpeg \
-       	gosu \
        	icewm \
-        supervisor \
-        xauth \
-        xfonts-base \
-        xkb-data \
-        x11-xkb-utils \
-        x11-xserver-utils \
     && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
 
 # assets.fanart.tv uses a ZeroSSL cert
@@ -95,32 +85,20 @@ RUN mkdir -p /usr/local/share/MediaElch \
     && curl -sfL -o /usr/local/share/MediaElch/advancedsettings.xml \
        https://raw.githubusercontent.com/Komet/MediaElch/${MEDIAELCH_BRANCH}/docs/advancedsettings.xml
 
-COPY supervisord.conf /etc/
-COPY docker-entrypoint.sh /
+COPY supervisord.conf /supervisor.d/
+COPY entrypoint.sh /entrypoint.d/
 COPY icewm /etc/X11/icewm
 
-COPY --from=easy-novnc /usr/local/bin/easy-novnc /usr/local/bin/easy-novnc
-COPY --from=turbovnc /opt/TurboVNC /opt/TurboVNC
 COPY --from=build /usr/local/bin/MediaElch /usr/local/bin/MediaElch
 COPY --from=build /usr/local/share/applications/MediaElch.desktop /usr/local/share/applications/MediaElch.desktop
 COPY --from=build /usr/local/share/pixmaps/MediaElch.png /usr/local/share/pixmaps/MediaElch.png
 COPY --from=build /usr/local/share/metainfo/com.kvibes.MediaElch.metainfo.xml /usr/local/share/metainfo/com.kvibes.MediaElch.metainfo.xml
 COPY --from=build /usr/local/lib/libquazip1-qt5.so* /usr/local/lib/
 
-CMD ["/docker-entrypoint.sh"]
-
-VOLUME /data
 VOLUME /media/movies
 VOLUME /media/tv
 
-# HTTP (noVNC) 
-EXPOSE 8000/tcp
-
-# VNC
-EXPOSE 5900/tcp
-
-ENV MEDIAELCH_UID=2000
-ENV MEDIAELCH_GID=2000
+ENV VNC_WINDOW_NAME=Mediaelch
 
 #ENV QT_DEBUG_PLUGINS=1
 
