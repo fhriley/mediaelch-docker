@@ -95,6 +95,9 @@ COPY --from=build /usr/local/share/pixmaps/MediaElch.png /usr/local/share/pixmap
 COPY --from=build /usr/local/share/metainfo/com.kvibes.MediaElch.metainfo.xml /usr/local/share/metainfo/com.kvibes.MediaElch.metainfo.xml
 COPY --from=build /usr/local/lib/libquazip1-qt5.so* /usr/local/lib/
 
+ENV MEDIAELCH_UID=2000
+ENV MEDIAELCH_GID=2000
+
 VOLUME /media/movies
 VOLUME /media/tv
 

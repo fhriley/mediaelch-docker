@@ -6,5 +6,8 @@ if [ ! -f /data/.local/share/kvibes/MediaElch/advancedsettings.xml ]; then
   chown -R app:app /data/.local
 fi
 
+export VNC_UID=${MEDIAELCH_UID}
+export VNC_GID=${MEDIAELCH_GID}
+
 export QT_LOGGING_RULES="generic.debug=false
 movie.debug=false"
